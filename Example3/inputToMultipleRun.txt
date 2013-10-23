@@ -1,0 +1,37 @@
+#This is an input file to Perl script 'multipleRun.pl'. Comments can be placed in this file by prefixing with '#'.
+# \author Anver Hisham <anverhisham@gmail.com>
+# Inputs should be specified in following format,
+# FilesName; line-number in the file; ParameterName; Values for parameter seperated by semicolon.
+ parameters.txt; ; a; 0; 1; 2;
+ parameters.txt; ; b; 0; 1;
+
+# Indicate maximum number of Jobs that can be run in parallel...
+maxParallelJobs =2
+
+# Specifies the command to execute inside each build directory
+# Note: foregroundCommandToExecuteInBuildFolder always execute before backgroundCommandToExecuteInBuildFolder...
+# Option: You can replicate lines, so that it will paralelly run the commands in different terminals...
+# Warning: backgroundCommandToExecuteInBuildFolder should print PID as last number in output (ie ./LTESim.run >someFile(can be /dev/null) &)
+foregroundCommandToExecuteInBuildFolder = cp ../parameters.txt .;
+backgroundCommandToExecuteInBuildFolder = ../programToRun.sh &
+
+# Specifies the command to execute at beginning of all jobs. This command would be executes at caller's location (outside build folders).
+# Option: You can replicate lines, so that it will paralelly run the commands in different bash terminals...
+startCommandToExecuteOutsideBuildFolder = 
+# Specifies the command to execute after end of all simulations (outside build folders).
+# Option: You can replicate lines, so that it will paralelly run the commands in different terminals...
+endCommandToExecuteOutsideBuildFolder =  
+
+# User can indicate build suffix patterns for simulation inclusion & exclusion. Final pattern to simulate will be intersection of (patternToInclude) and (complement of patternToExclude)
+#Indicate the patterns in Extended Regular Expression, for build folder names to include/exclude simulations. Note that pattern should start from '_'
+#Example:  _\d*_0*[3-6] for including/excluding all build folders with second parameter indices as 3,4,5,6
+#Example:  _(\d+)_\1 for including/excluding all build folders in which index of first parameter and second parameter matches.
+# Note: Multiple patterns can be specified using semicolon as delimiter.
+# Note: If nothing is specified, then the match will always be false.
+buildSuffixPatternsToInclude =  _(\d+)_\1 #_1_\d*$; _2_\d*$
+buildSuffixPatternsToExclude =    #_\d*_1$; _\d*_2$
+
+# Command to know all running jobs currently (Note: Following command is expected to output PIDs one by one in each line...)
+## For Linux machines, following is the command. (Need to change this to use in other platforms)
+commandToKnowAllRunningJobs = ps -eo pid
+
